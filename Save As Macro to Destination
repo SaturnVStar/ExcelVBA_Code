@@ -1,0 +1,37 @@
+Public Sub INPL_pdf_L2()
+        Dim Path As String
+        Dim FileName As String
+        
+    'Activates filter to show only non-blank data'
+    
+            ActiveSheet.Range("$Z$11:$Z$74").AutoFilter Field:=1, Criteria1:="<>"
+        
+    'Considering Sheet1(line 2) to be where you need to pick file name
+
+            Path = "G:\Shared drives\USA-Logistics\INPL\2021\"
+            FileName = Sheet1.Range("A10").Value
+                Sheets("PL").Select
+                ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF, _
+                    FileName:=Path & FileName
+    
+    'Update Daniel Collins
+            'Saves workbook as new file into the INPL folder in the Logistics folder, naming the file by work-order# and customer ID all generated in cell A10.
+        Application.DisplayAlerts = False
+            Dim sPath As String, sFile As String
+            Dim wb As Workbook
+        'Takes formula in cell A10 and copies paste as value instead of formula saving file name saving purposes'
+            Range("A10").Select
+                Selection.Copy
+                Range("A10").Select
+                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                        :=False, Transpose:=False
+
+        
+                Path = "G:\Shared drives\USA-Logistics\INPL\2021\"
+                    FileName = Sheet1.Range("A10").Value
+            ActiveWorkbook.SaveAs FileName:=Path & FileName & ".xlsx", FileFormat:=xlOpenXMLWorkbook
+            'Opens a new instance of Internal Packing List Line 2.
+                Workbooks.Open FileName:= _
+                    "G:\Shared drives\USA-Logistics\INPL\Mod  047 (Rev 4) Internal Packing List - LINE 2.xlsm", _
+                     UpdateLinks:=0
+End Sub
