@@ -1,0 +1,684 @@
+Sub Data_Modifcation()
+    'Declares wk as template macro file
+    Dim wk As Workbook
+    'Declare shortcuts
+    Dim fd1 As Office.FileDialog
+    Dim strFile As String
+'--Defintions----------------------------------------------------------------------------------------------------------
+    '----------------------------------Folder Paths (C)----------------------------------
+    'designates path destinations for Sharepoint
+        'To Main Path
+        Path = Sheets("Paths").Range("C3").Value
+        'Year (Fld_Y)
+        Ypath = Sheets("Paths").Range("C4").Value
+        'Month (Fld_M)
+        Monpath = Sheets("Paths").Range("C5").Value
+        'T-1Year (Fld_Y)
+        PYpath = Sheets("Paths").Range("C6").Value
+        'T-1Month (Fld_M)
+        PMonth = Sheets("Paths").Range("C7").Value
+        'T-2Month (Fld_M)
+        P2Month = Sheets("Paths").Range("C8").Value
+        'RAW_Data_Documents (Fld_1)
+        Fld_1 = Sheets("Paths").Range("C9").Value
+        'Historical Builds/Product  (Fld_2)
+        Fld_2 = Sheets("Paths").Range("C10").Value
+        ' Templates (Fld_3)
+        Fld_3 = Sheets("Paths").Range("C11").Value
+        '(Fld_20)
+        Fld_20 = Sheets("Paths").Range("C28").Value
+    '----------------------------------Open Files (H)------------------------------------
+    'designates the Post-lock Combined Constituents File
+        'MMM_YYYY__Save_v.7   (oFile0)
+        oFile0 = Sheets("Paths").Range("H5").Value
+    '----------------------------------Data Files (Q)------------------------------------
+    'designates the Last Quarters Latest Delivery File
+        'RAW_PIVOT_DATA_MMM_YYYY.csv   (dFile0)
+        dFile0 = Sheets("Paths").Range("Q5").Value
+        'RAW_PIVOT_DATA_DATA_MMM_YYYY   (dFile1)
+        dFile1 = Sheets("Paths").Range("Q6").Value
+        'RAW_PIVOT_DATA_DATA.csv   (dFile2)
+        dFile2 = Sheets("Paths").Range("Q7").Value
+    '----------------------------------Template Files (N)--------------------------------
+    'designates the Last Quarters Latest Delivery File
+        'Template   (tFile0)
+        tFile0 = Sheets("Paths").Range("N5").Value
+    '----------------------------------Save Files (K)------------------------------------
+    'designates the Save as File Names
+        'MMM_YYYY__FIle Save_v.0   (sFile0)
+        sFile0 = Sheets("Paths").Range("K5").Value
+        'MMM_YYYY__FIle Save_v.1   (sFile1)
+        sFile1 = Sheets("Paths").Range("K6").Value
+        'MMM_YYYY__FIle Save_v.2   (sFile2)
+        sFile2 = Sheets("Paths").Range("K7").Value
+        'MMM_YYYY__FIle Save_v.3   (sFile3)
+        sFile3 = Sheets("Paths").Range("K8").Value
+        'MMM_YYYY__FIle Save_v.4   (sFile4)
+        sFile4 = Sheets("Paths").Range("K9").Value
+        'MMM_YYYY__FIle Save_v.5   (sFile5)
+        sFile5 = Sheets("Paths").Range("K10").Value
+        'MMM_YYYY__FIle Save_v.6   (sFile6)
+        sFile6 = Sheets("Paths").Range("K11").Value
+        'MMM_YYYY__FIle Save_v.7   (sFile7)
+        sFile7 = Sheets("Paths").Range("K12").Value
+    '----------------------------------Sheet Names (E)-----------------------------------
+    'designates the Sheets Names
+        'Template   (Sheet_0)
+        Sheet_0 = Sheets("Paths").Range("E5").Value
+        'Requirements   (Sheet_1)
+        Sheet_1 = Sheets("Paths").Range("E6").Value
+        'REQ_Headers   (Sheet_2)
+        Sheet_2 = Sheets("Paths").Range("E7").Value
+        ' Pivot   (Sheet_3)
+        Sheet_3 = Sheets("Paths").Range("E8").Value
+        'Data Set   (Sheet_4)
+        Sheet_4 = Sheets("Paths").Range("E9").Value
+        'REF Data   (Sheet_5)
+        Sheet_5 = Sheets("Paths").Range("E10").Value
+        'Old REF Data   (Sheet_6)
+        Sheet_6 = Sheets("Paths").Range("E11").Value
+    '----------------------------------Save Paths----------------------------------------
+    'designates Paths
+        'Path to Product ->PYYYY->PrevMonth
+        sPath0 = Path & Fld_2 & PYpath & PMonth & Fld_20
+    '----------------------------------Open Paths----------------------------------------
+    'designates Paths
+        'Path to Product -> Templates->Comments Template   (tFile0)
+        oPath0 = Path & Fld_2 & Fld_3 & tFile0
+        'Path to Raw_Data_Documents->YYYY->MMM->.csv   (dFile0)
+        oPath1 = Path & Fld_1 & PYpath & PMonth & dFile0
+        'Path to Raw_Data_Documents->YYYY->MMM->   (dFile1)
+        oPath2 = Path & Fld_1 & PYpath & PMonth & dFile1
+        'Path to Raw_Data_Documents->YYYY->MMM->.csv   (dFile2)
+        oPath3 = Path & Fld_1 & PYpath & PMonth & dFile2
+        'Path to Raw_Data_Documents->YYYY->MMM->.xlsx   (oFile0)
+        oPath4 = Path & Fld_2 & PYpath & P2Month & oFile0
+        
+    '----------------------------------Save As Files Path--------------------------------
+        'MMM_YYYY__Wbig_build_v.0   (sFile0)
+        SavePath0 = sPath0 & sFile0
+        'MMM_YYYY__Wbig_build_v.1   (sFile1)
+        SavePath1 = sPath0 & sFile1
+        'MMM_YYYY__Wbig_build_v.2   (sFile2)
+        SavePath2 = sPath0 & sFile2
+        'MMM_YYYY__Wbig_build_v.3   (sFile3)
+        SavePath3 = sPath0 & sFile3
+        'MMM_YYYY__Wbig_build_v.4   (sFile4)
+        SavePath4 = sPath0 & sFile4
+        'MMM_YYYY__Wbig_build_v.5   (sFile5)
+        SavePath5 = sPath0 & sFile5
+        'MMM_YYYY__Wbig_build_v.6   (sFile6)
+        SavePath6 = sPath0 & sFile6
+        'MMM_YYYY__Wbig_build_v.7   (sFile7)
+        SavePath7 = sPath0 & sFile7
+    '----------------------------------Keywords------------------------------------------
+        NCOV = "" & Chr(34) & "No Coverage" & Chr(34) & ""
+        ND = "" & Chr(34) & "No Data" & Chr(34) & ""
+        NA = "" & Chr(34) & "#N/A" & Chr(34) & ""
+        NE = "" & Chr(34) & "Not Excluded" & Chr(34) & ""
+        NC = "" & Chr(34) & "Non-Compliant" & Chr(34) & ""
+        COM = "" & Chr(34) & "Compliant" & Chr(34) & ""
+        EX = "" & Chr(34) & "Excluded" & Chr(34) & ""
+        WL = "" & Chr(34) & "Watchlist" & Chr(34) & ""
+        nm = "" & Chr(34) & "No Match" & Chr(34) & ""
+        y = "" & Chr(34) & "Yes" & Chr(34) & ""
+        blk = """"""
+        NPM = "" & Chr(34) & "Not in Previous Month" & Chr(34) & ""
+        'Special naming cell: _No_Data_Mmm
+        Cell1 = Sheets("Paths").Range("E21").Value
+
+'--Code Starts---------------------------------------------------------------------------------------------------------
+'Step 1
+    'Opens the Comments Template_ (tFile0)
+    Workbooks.Open (oPath0)
+
+    '1-a
+    'Saves the Comments Template_ (tFile0) as MMM_YYYY__Wbig_build_v.0 (sFile0)
+    Workbooks(tFile0).SaveAs Filename:=SavePath0, FileFormat:=xlOpenXMLWorkbook
+    
+'Step 2
+    
+    '2-A
+    'Opens the RAW_PIVOT_DATA_MMM_YYYY.csv (dFile0)
+    Workbooks.Open (oPath1)
+        'A-i
+        'Copies the Req Headers Sheet into the Work book
+        ActiveSheet.Copy After:=Workbooks(sFile0).Sheets(Sheet_0)
+        'A-ii
+    'Closes the RAW_PIVOT_DATA_MMM_YYYY.csv (dFile0)
+    Workbooks(dFile0).Close SaveChanges:=False
+    '2-B
+    'Opens the RAW_PIVOT_DATA_MMM_YYYY(dFile1)
+    Workbooks.Open (oPath2)
+        'B-i
+        'Copies the Req Headers Sheet into the Work book
+        ActiveSheet.Copy After:=Workbooks(sFile0).Sheets(Sheet_0)
+        'B-ii
+    'Closes the RAW_PIVOT_DATA_MMM_YYYY(dFile1)
+    Workbooks(dFile1).Close SaveChanges:=False
+    '2-C
+    'Opens the RAW_PIVOT_DATA_MMM_YYYY.csv (dFile2)
+    Workbooks.Open (oPath3)
+        'C-i
+        'Copies the Req Headers Sheet into the Work book
+        ActiveSheet.Copy After:=Workbooks(sFile0).Sheets(Sheet_0)
+        'C-ii
+    'Closes the RAW_PIVOT_DATA_MMM_YYYY.csv (dFile2)
+    Workbooks(dFile2).Close SaveChanges:=False
+    'Activates the MMM_YYYY__Wbig_build_v.0 (sFile0)
+    Workbooks(sFile0).Activate
+    'Saves the MMM_YYYY__Wbig_build_v.0 (sFile0)
+    Workbooks(sFile0).Save
+'Step 3
+    'Saves MMM_YYYY__Wbig_build_v.0 (sFile0) as MMM_YYYY__Wbig_build_v.1 (sFile1)
+    Workbooks(sFile0).SaveAs Filename:=SavePath1, FileFormat:=xlOpenXMLWorkbook
+    
+'Step 4
+    '4-A
+    'GSS
+    'Deletes columns based on the list in the GSS Column
+    'Activates REQ_Headers
+    Worksheets(Sheet_2).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastRow.
+                LastRow0 = ActiveSheet.Range("E1").CurrentRegion.Rows.Count
+                'Custom code that sets up a Column Array by creating a shortcut function name colarr
+                    'This array is what is used as a list to run against the column headers in the All Cat File sheet.
+                    'this list can be updated to include future criteria for future updates and will work without disrupting or breaking other functions
+                colarr0 = Range(Cells(1, 5), Cells(LastRow0, 5))
+    
+    'Activates the Sheet
+    Sheets(Sheet_3).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastCol.
+                LastCol0 = ActiveSheet.Range("A1").CurrentRegion.Columns.Count
+                'Custom code that sets up a search range by creating a shortcut function named heads by combining the LastCol function range function
+                heads0 = Range(Cells(1, 1), Cells(1, LastCol0))
+                    'Code for setting up quick ref variable for the LastCol function
+                        For i = LastCol0 To 1 Step -1
+                            fnd = False
+                        'Code for setting up quick ref variable for the LastRow function
+                        For j = 1 To LastRow0
+                            'Code combining the quick ref functions together to tie them into the colarr function as defined above
+                            If heads0(1, i) = colarr0(j, 1) Then
+                                fnd = True
+                        Exit For
+                            End If
+                    Next j
+                        'Code that uses all of the above defined functions to find the column headers  -
+                        'that are needed to be kept based off the current criteria listed in the All Cat Involvement List
+                        If Not (fnd) Then
+                            'Deletes the unwanted columns that werent listed
+                        Columns(i).Delete Shift:=xlShiftToLeft
+                        End If
+                    Next i
+    
+    '4-B
+    'SA REF
+    'Deletes columns based on the list in the SA REF Column
+    'Activates REQ_Headers
+    Worksheets(Sheet_2).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastRow.
+                LastRow1 = ActiveSheet.Range("C1").CurrentRegion.Rows.Count
+                'Custom code that sets up a Column Array by creating a shortcut function name colarr
+                    'This array is what is used as a list to run against the column headers in the All Cat File sheet.
+                    'this list can be updated to include future criteria for future updates and will work without disrupting or breaking other functions
+                colarr1 = Range(Cells(1, 3), Cells(LastRow1, 3))
+    
+    'Activates the Ref Sheet
+    Sheets(Sheet_5).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastCol.
+                LastCol1 = ActiveSheet.Range("A1").CurrentRegion.Columns.Count
+                'Custom code that sets up a search range by creating a shortcut function named heads by combining the LastCol function range function
+                heads1 = Range(Cells(1, 1), Cells(1, LastCol1))
+                    'Code for setting up quick ref variable for the LastCol function
+                        For i = LastCol1 To 1 Step -1
+                            fnd = False
+                        'Code for setting up quick ref variable for the LastRow function
+                        For j = 1 To LastRow1
+                            'Code combining the quick ref functions together to tie them into the colarr function as defined above
+                            If heads1(1, i) = colarr1(j, 1) Then
+                                fnd = True
+                        Exit For
+                            End If
+                    Next j
+                        'Code that uses all of the above defined functions to find the column headers  -
+                        'that are needed to be kept based off the current criteria listed in the All Cat Involvement List
+                        If Not (fnd) Then
+                            'Deletes the unwanted columns that werent listed
+                        Columns(i).Delete Shift:=xlShiftToLeft
+                        End If
+                    Next i
+    
+    '4-C
+    'All-Cat
+    'Deletes columns based on the list in the All Cat Involvement List Column
+    'Activates REQ_Headers
+    Worksheets(Sheet_2).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastRow.
+                LastRow2 = ActiveSheet.Range("A1").CurrentRegion.Rows.Count
+                'Custom code that sets up a Column Array by creating a shortcut function name colarr
+                    'This array is what is used as a list to run against the column headers in the All Cat File sheet.
+                    'this list can be updated to include future criteria for future updates and will work without disrupting or breaking other functions
+                colarr2 = Range(Cells(1, 1), Cells(LastRow2, 1))
+    
+    'Activates the RAW_PIVOT_DATA Sheet
+   Sheets(Sheet_4).Activate
+                'Code setting up boundaries of the selection array with a known start position, but unknown ending position for Rows by creatinga shortcut function name LastCol.
+                LastCol2 = ActiveSheet.Range("A1").CurrentRegion.Columns.Count
+                'Custom code that sets up a search range by creating a shortcut function named heads by combining the LastCol function range function
+                heads2 = Range(Cells(1, 1), Cells(1, LastCol2))
+                    'Code for setting up quick ref variable for the LastCol function
+                        For i = LastCol2 To 1 Step -1
+                            fnd = False
+                        'Code for setting up quick ref variable for the LastRow function
+                        For j = 1 To LastRow2
+                            'Code combining the quick ref functions together to tie them into the colarr function as defined above
+                            If heads2(1, i) = colarr2(j, 1) Then
+                                fnd = True
+                        Exit For
+                            End If
+                    Next j
+                        'Code that uses all of the above defined functions to find the column headers  -
+                        'that are needed to be kept based off the current criteria listed in the All Cat Involvement List
+                        If Not (fnd) Then
+                            'Deletes the unwanted columns that werent listed
+                        Columns(i).Delete Shift:=xlShiftToLeft
+                        End If
+                    Next i
+            
+'Step 5
+            'Replaces the following Headers with codeword Headers
+            Range("J1:X1").Replace What:="Controversial Weapons Tailormade and essential-Standard Combo", Replacement:="CW1"
+            Range("J1:X1").Replace What:="Controversial Weapons Significant ownership (Tailormade and essential)-Standard Combo", Replacement:="CW2"
+            Range("J1:X1").Replace What:="Controversial Weapons Non tailormade or non essential-Standard Combo", Replacement:="CW3"
+            Range("J1:X1").Replace What:="Controversial Weapons Significant ownership (non tailormade or non essential)-Standard Combo", Replacement:="CW4"
+            Range("J1:X1").Replace What:="Small Arms Civilian customers (Assault weapons)-Standard Combo", Replacement:="FA1"
+            Range("J1:X1").Replace What:="Small Arms Civilian customers (Nonassault weapons)-Standard Combo", Replacement:="FA11"
+            Range("J1:X1").Replace What:="Small Arms Key components-Standard Combo", Replacement:="FA5>5%"
+            Range("J1:X1").Replace What:="Small Arms Retail/distribution (Assault weapons)-Standard Combo", Replacement:="FA7>5%"
+            Range("J1:X1").Replace What:="Small Arms Retail/distribution (Nonassault weapons)-Standard Combo", Replacement:="FA9>5%"
+            Range("J1:X1").Replace What:="Military Contracting Weaponrelated products and/or services-Standard Combo", Replacement:="MC3"
+            Range("J1:X1").Replace What:="Tobacco Products Production-Standard Combo", Replacement:="TP1"
+            Range("J1:X1").Replace What:="Tobacco Products Retail-Standard Combo", Replacement:="TP5>5%"
+            Range("J1:X1").Replace What:="Thermal Coal Extraction-Standard Combo", Replacement:="TC1>5%"
+            Range("J1:X1").Replace What:="Thermal Coal Power Generation-Standard Combo", Replacement:="TC3>25%"
+            Range("J1:X1").Replace What:="Oil Sands Extraction-Standard Combo", Replacement:="OS1>5%"
+'Step 6
+    '6-a
+            'CW1
+            Range("Y1").Value = "CW1"
+        'a-i
+            Range("Y2").Formula = "=IF(ISBLANK($M2)," + ND + ",XLOOKUP($M2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!C:C," + nm + ",0))"
+    '6-b
+            'CW2
+            Range("Z1").Value = "CW2"
+        'b-i
+            Range("Z2").Formula = "=IF(ISBLANK($K2)," + ND + ",XLOOKUP($K2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!D:D," + nm + ",0))"
+    '6-c
+            'CW3
+            Range("AA1").Value = "CW3"
+        'c-i
+            Range("AA2").Formula = "=IF(ISBLANK($J2)," + ND + ",XLOOKUP($J2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!E:E," + nm + ",0))"
+    '6-d
+            'CW4
+            Range("AB1").Value = "CW4"
+        'd-i
+            Range("AB2").Formula = "=IF(ISBLANK($L2)," + ND + ",xLOOKUP(L2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!F:F,,0))"
+    '6-e
+            'FA1
+            Range("AC1").Value = "FA1"
+        'e-i
+            Range("AC2").Formula = "=IF(ISBLANK($P2)," + ND + ",xLOOKUP(P2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!G:G,,0))"
+    '6-f
+            'FA11
+            Range("AD1").Value = "FA11"
+        'f-i
+            Range("AD2").Formula = "=IF(ISBLANK($Q2)," + ND + ",XLOOKUP(Q2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!H:H,,0))"
+    '6-g
+            'FA5>5%
+            Range("AE1").Value = "FA5>5%"
+        'g-i
+            Range("AE2").Formula = "=IF(ISBLANK($R2)," + ND + ",XLOOKUP(R2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!I:I,,0))"
+    '6-h
+            'FA7>5%
+            Range("AF1").Value = "FA7>5%"
+        'h-i
+            Range("AF2").Formula = "=IF(ISBLANK($S2)," + ND + ",XLOOKUP(S2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!J:J,,0))"
+    '6-i
+            'FA9>5%
+            Range("AG1").Value = "FA9>5%"
+        'i-i
+            Range("AG2").Formula = "=IF(ISBLANK($T2)," + ND + ",XLOOKUP(T2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!K:K,,0))"
+    '6-j
+            'MC3
+            Range("AH1").Value = "MC3"
+        'j-i
+            Range("AH2").Formula = "=IF(ISBLANK($N2)," + ND + ",XLOOKUP(N2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!L:L,,0))"
+    '6-k
+            'TP1
+            Range("AI1").Value = "TP1"
+        'k-i
+            Range("AI2").Formula = "=IF(ISBLANK($W2)," + ND + ",XLOOKUP(W2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!M:M,,0))"
+    '6-l
+            'TP5>5%
+            Range("AJ1").Value = "TP5>5%"
+        'l-i
+            Range("AJ2").Formula = "=IF(ISBLANK($X2)," + ND + ",XLOOKUP(X2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!N:N,,0))"
+    '6-m
+            'TC1>5%
+            Range("AK1").Value = "TC1>5%"
+        'm-i
+            Range("AK2").Formula = "=IF(ISBLANK($U2)," + ND + ",XLOOKUP(U2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!O:O,,0))"
+    '6-n
+            'TC3>25%
+            Range("AL1").Value = "TC3>25%"
+        'n-i
+            Range("AL2").Formula = "=IF(ISBLANK($V2)," + ND + ",XLOOKUP(V2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!P:P,,0))"
+    '6-o
+            'OS1>5%
+            Range("AM1").Value = "OS1>5%"
+        'o-i
+            Range("AM2").Formula = "=IF(ISBLANK($O2)," + ND + ",XLOOKUP(O2," + Sheet_0 + "!$A:$A," + Sheet_0 + "!Q:Q,,0))"
+    '6-p
+            
+    'Sets parameters for filldown function
+    LastPopulatedRowAC = Range("A" & Rows.Count).End(xlUp).Row
+            'Fills down the inserted formulas
+            Range("Y2: " & "AM" & LastPopulatedRowAC).FillDown
+            'Fills down the inserted formulas
+            Range("Y2: " & "AM" & LastPopulatedRowAC).Copy
+            'Positions the active cell to A1
+            Range("Y2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+            
+'Step 7
+    'Saves the MMM_YYYY__Wbig_build_v.1 (sFile1)
+    Workbooks(sFile1).Save
+
+'Step 8
+    'Saves MMM_YYYY__Wbig_build_v.1 (sFile1) as MMM_YYYY__Wbig_build_v.2 (sFile2)
+    Workbooks(sFile1).SaveAs Filename:=SavePath2, FileFormat:=xlOpenXMLWorkbook
+
+'Step 9
+            'GSS
+            Range("AN1").Value = "GSS"
+            
+            Range("AN2").Formula = "=IF(ISBLANK(XLOOKUP(" + Sheet_4 + "!$A2," + Sheet_3 + "!$A:$A," + Sheet_3 + "!$J:$J,,0))," + ND + ",XLOOKUP(" + Sheet_4 + "!$A2," + Sheet_3 + "!$A:$A," + Sheet_3 + "!$J:$J,,0))"
+
+'Step 10
+    
+    '10-a
+            'Contro_Conduct
+            Range("AO1").Value = "_Conduct"
+        'a-i
+            Range("AO2").Formula = "=IFS($AN2=" + ND + "," + ND + ",$AN2=" + NC + "," + EX + ",OR($AN2=" + COM + ",$AN2=" + WL + ")," + NE + ")"
+    '10-b
+            'Contro_Weapons
+            Range("AP1").Value = "_weapons"
+        'b-i
+            Range("AP2").Formula = "=IFS(COUNTIF($Y2:$AB2," + EX + ")>0," + EX + ",COUNTIF($Y2:$AB2," + ND + ")>0," + ND + ",COUNTIF($Y2:$AB2," + NE + ")>0," + NE + ")"
+    '10-c
+            'Firearms_Prod
+            Range("AQ1").Value = "_Production"
+        'c-i
+            Range("AQ2").Formula = "=IFS(COUNTIF($AE2:$AH2," + EX + ")>0," + EX + ",COUNTIF($AE2:$AH2," + ND + ")>0," + ND + ",COUNTIF($AE2:$AH2," + NE + ")>0," + NE + ")"
+    '10-d
+            'Firearms_Retail
+            Range("AR1").Value = "_Retail_5_Revenue"
+        'd-i
+            Range("AR2").Formula = "=IFS(COUNTIF($AC2:$AD2," + EX + ")>0," + EX + ",COUNTIF($AC2:$AD2," + ND + ")>0," + ND + ",COUNTIF($AC2:$AD2," + NE + ")>0," + NE + ")"
+    '10-e
+            'Tobacco_Prod
+            Range("AS1").Value = "_Production"
+        'e-i
+            Range("AS2").Formula = "=IFS(COUNTIF($AI2," + EX + ")>0," + EX + ",COUNTIF($AI2," + ND + ")>0," + ND + ",COUNTIF($AI2," + NE + ")>0," + NE + ")"
+    '10-f
+            'Tobacco_Retail
+            Range("AT1").Value = "_Retail_5_Revenue"
+        'f-i
+            Range("AT2").Formula = "=IFS(COUNTIF($AJ2," + EX + ")>0," + EX + ",COUNTIF($AJ2," + ND + ")>0," + ND + ",COUNTIF($AJ2," + NE + ")>0," + NE + ")"
+    '10-g
+            'TC_Ex
+            Range("AU1").Value = "_Extraction"
+        'g-i
+            Range("AU2").Formula = "=IFS(COUNTIF($AK2," + EX + ")>0," + EX + ",COUNTIF($AK2," + ND + ")>0," + ND + ",COUNTIF($AK2," + NE + ")>0," + NE + ")"
+    '10-h
+            'TC_EG
+            Range("AV1").Value = "_Electricity_Generation__25_"
+        'h-i
+            Range("AV2").Formula = "=IFS(COUNTIF($AL2," + EX + ")>0," + EX + ",COUNTIF($AL2," + ND + ")>0," + ND + ",COUNTIF($AL2," + NE + ")>0," + NE + ")"
+    '10-i
+            'OS
+            Range("AW1").Value = "_5_Revenue"
+        'i-i
+            Range("AW2").Formula = "=IFS(COUNTIF($AM2," + EX + ")>0," + EX + ",COUNTIF($AM2," + ND + ")>0," + ND + ",COUNTIF($AM2," + NE + ")>0," + NE + ")"
+    '10-j
+            
+            'Fills down the inserted formulas
+            Range("AN2: " & "AW" & LastPopulatedRowAC).FillDown
+            'Fills down the inserted formulas
+            Range("AN2: " & "AW" & LastPopulatedRowAC).Copy
+            'Positions the active cell to A1
+            Range("AN2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+'Step 12
+    'Saves MMM_YYYY__Wbig_build_v.2 (sFile2) as MMM_YYYY__Wbig_build_v.3 (sFile3)
+    Workbooks(sFile2).SaveAs Filename:=SavePath3, FileFormat:=xlOpenXMLWorkbook
+    
+'Step 13
+    'Opens the Previous MMM_YYYY__Wbig_build_v.6-Macro Test.xlsx (pFile1)
+    Workbooks.Open (oPath4)
+        'Renames the sheet to SA_REF_DATA PREV MONTH (Sheet6)
+        ActiveSheet.Name = Sheet_6
+        'Copies the SA_REF_DATA PREV MONTH (Sheet6) into the MMM_YYYY__Wbig_build_v.3 (sFile3)
+        Sheets(Sheet_6).Copy After:=Workbooks(sFile3).Sheets(Sheet_5)
+    'Closes the Previous MMM_YYYY__Wbig_build_v.6-Macro Test.xlsx (pFile1)
+    Workbooks(oFile0).Close SaveChanges:=False
+
+'Step 14
+    'Activates the MMM_YYYY__Wbig_build_v.3 (sFile3)
+    Workbooks(sFile3).Activate
+        'Activates the SA_REF_DATA (Sheet5)
+        Sheets(Sheet_5).Activate
+    '14-a
+            Range("AI1").Value = "_Conduct"
+        'a-i
+            Range("AI2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AO:$AO," + nm + ",0)"
+    '14-b
+            Range("AJ1").Value = "_weapons"
+        'b-i
+            Range("AJ2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AP:$AP," + nm + ",0)"
+    '14-c
+            Range("AK1").Value = "_Production"
+        'c-i
+            Range("AK2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AR:$AR," + nm + ",0)"
+    '14-d
+            Range("AL1").Value = "Retail__5__Revenue"
+        'd-i
+            Range("AL2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AQ:$AQ," + nm + ",0)"
+    '14-e
+            Range("AM1").Value = "_Production"
+        'e-i
+            Range("AM2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AS:$AS," + nm + ",0)"
+    '14-f
+            Range("AN1").Value = "_Retail_5__Revenue"
+        'f-i
+            Range("AN2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AT:$AT," + nm + ",0)"
+    '14-g
+            Range("AO1").Value = "_Extraction"
+        'g-i
+            Range("AO2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AU:$AU," + nm + ",0)"
+    '14-h
+            Range("AP1").Value = "_Electricity_Generation__25_"
+        'h-i
+            Range("AP2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AV:$AV," + nm + ",0)"
+    '14-i
+            Range("AQ1").Value = "__5__Revenue"
+        'i-i
+            Range("AQ2").Formula = "=XLOOKUP($A2," + Sheet_4 + "!$A:$A," + Sheet_4 + "!$AW:$AW," + nm + ",0)"
+            
+    'Sets parameters for filldown function
+    LastPopulatedRowREF = Range("A" & Rows.Count).End(xlUp).Row
+            'Fills down the inserted formulas
+            Range("AI2: " & "AQ" & LastPopulatedRowREF).FillDown
+            'Fills down the inserted formulas
+            Range("AI2: " & "AQ" & LastPopulatedRowREF).Copy
+            'Positions the active cell to A1
+            Range("AI2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+            
+'Step 15
+    'Saves MMM_YYYY__Wbig_build_v.3 (sFile3) as MMM_YYYY__Wbig_build_v.4 (sFile4)
+    Workbooks(sFile3).SaveAs Filename:=SavePath4, FileFormat:=xlOpenXMLWorkbook
+            
+'Step 16
+            'Selects columns AK through AS to replace
+            Range("AI:AQ").Replace What:="Excluded", Replacement:="Yes", Lookat:=xlWhole
+    '17b
+            'Selects columns AK through AS to replace
+            Range("AI:AQ").Replace What:="Not Excluded", Replacement:="", Lookat:=xlPart
+    
+    '16-a
+            '_No_Data
+            Range("AR1").Value = "_No_Data"
+        'a-i
+            Range("AR2").Formula = "=IF(COUNTIF($AI2:$AQ2," + ND + ")>0," + y + "," + blk + ")"
+    '16-b
+            'Fills down the inserted formulas
+            Range("AR2: " & "AR" & LastPopulatedRowREF).FillDown
+            'Fills down the inserted formulas
+            Range("AR2: " & "AR" & LastPopulatedRowREF).Copy
+            'Positions the active cell to A1
+            Range("AR2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+
+'Step 17
+    '17a
+    '17c
+            'Selects columns AK through AS to replace
+            Range("AI:AQ").Replace What:="No Data", Replacement:="", Lookat:=xlPart
+                
+'Step 18
+    '18-a
+            '_No_Data_MMM
+            Range("AS1").Value = Cell1
+        'a-i
+            '_No_Data_MMM Formula
+            Range("AS2").Formula = "=XLOOKUP($A2," + Sheet_6 + "!$A:$A," + Sheet_6 + "!$AR:$AR," + NPM + ",0)"
+    '18-b
+            'Change
+            Range("AT1").Value = "Change"
+    '18-c
+            'Exclusion
+            Range("AU1").Value = "Exclusion"
+        'c-i
+            'Exclusion formula
+'            Range("AW2").Formula = "=COUNTIF($AK2:$AT2," + y + ")"
+    '18-d
+            'GSS Eligibility
+            Range("AV1").Value = " Eligibility"
+        'd-i
+            'GSS Eligibility Formula
+            Range("AV2").Formula = "=XLOOKUP($A2," + Sheet_6 + "!$A:$A," + Sheet_6 + "!$AU:$AU," + NA + ",0)"
+    '18-e
+            'PI Eligibility
+            Range("AW1").Value = " Eligibility"
+        'e-i
+            'PI Eligibility Formula
+            Range("AW2").Formula = "=XLOOKUP($A2," + Sheet_6 + "!$A:$A," + Sheet_6 + "!$AV:$AV," + NA + ",0)"
+    '18-f
+            
+            'Fills down the inserted formulas
+            Range("AS2: " & "AS" & LastPopulatedRowREF).FillDown
+            'Fills down the inserted formulas
+            Range("AS2: " & "AS" & LastPopulatedRowREF).Copy
+            'Positions the active cell to A1
+            Range("AS2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+            'Fills down the inserted formulas
+            Range("AV2: " & "AW" & LastPopulatedRowREF).FillDown
+            'Fills down the inserted formulas
+            Range("AV2: " & "AW" & LastPopulatedRowREF).Copy
+            'Positions the active cell to A1
+            Range("AV2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+        
+'Step 19
+    'Saves MMM_YYYY__Wbig_build_v.4 (sFile4) as MMM_YYYY__Wbig_build_v.5 (sFile5)
+    Workbooks(sFile4).SaveAs Filename:=SavePath5, FileFormat:=xlOpenXMLWorkbook
+        
+'Step 20
+        'Filters  Eligibilty & _No_Data [Columns AR{44},AV{48}]
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=48, Criteria1:="ineligible"
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=44, Criteria1:="Yes"
+            'Replaces "Yes's" with blanks
+            Range("AR:AR").SpecialCells(xlCellTypeVisible).Replace What:="Yes", Replacement:="", Lookat:=xlWhole
+        'Clears Filters
+        ActiveSheet.ShowAllData
+        
+'Step 21
+        'Filters  Eligibilty & _No_Data [Columns AR{44},AW{49}]
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=49, Criteria1:="ineligible"
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=44, Criteria1:="Yes"
+            'Replaces "Yes's" with blanks
+            Range("AR:AR").SpecialCells(xlCellTypeVisible).Replace What:="Yes", Replacement:="", Lookat:=xlWhole
+        'Clears Filters
+        ActiveSheet.ShowAllData
+    
+'Step 22
+    '22-a
+        'Filters _No_Data & _No_Data_PM & Exclusion [Columns AR{44},AS{45},and AU{47}]
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=44, Criteria1:="Yes"
+        ActiveSheet.Range("A1: " & "AW" & LastPopulatedRowREF).AutoFilter Field:=45, Criteria1:="0"
+'        ActiveSheet.Range("A1: " & "AY" & LastPopulatedRowREF).AutoFilter Field:=49, Criteria1:="3"
+            'Replaces "Yes's" with blanks
+            Range("AR:AR").SpecialCells(xlCellTypeVisible).Replace What:="Yes", Replacement:="", Lookat:=xlWhole
+            'Replaces "Yes's" with blanks
+'            Range("AZ:AZ").SpecialCells(xlCellTypeVisible).Replace What:="3", Replacement:="2", Lookat:=xlWhole
+        'Clears Filters
+        ActiveSheet.ShowAllData
+        
+        'c-i
+            'Exclusion formula
+            Range("AU2").Formula = "=COUNTIF($AI2:$AR2," + y + ")"
+    
+            'Fills down the inserted formulas
+            Range("AU2: " & "AU" & LastPopulatedRowREF).FillDown
+            'Fills down the inserted formulas
+            Range("AU2: " & "AU" & LastPopulatedRowREF).Copy
+            'Positions the active cell to A1
+            Range("AU2").Activate
+                'Pastes all data as values
+                Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    
+    
+'Step 23
+    'Saves MMM_YYYY__Wbig_build_v.5 (sFile6) as MMM_YYYY__Wbig_build_v.6 (sFile6)
+    Workbooks(sFile5).SaveAs Filename:=SavePath6, FileFormat:=xlOpenXMLWorkbook
+        
+'Step 24
+        'Selects the T_IDP_SA_REF_DATA sheet
+        Sheets(Sheet_5).Select
+        'Copies the T_IDP_SA_REF_DATA sheet
+        Sheets(Sheet_5).Copy
+
+'Step 25
+            'Deletes the previous  No Data Column
+            Range("AS1").EntireColumn.Delete
+
+'Step 26
+    'Saves MMM_YYYY__Wbig_build_v.6 (sFile6) as MMM_YYYY__Wbig_build_v.7 (sFile7)
+    ActiveWorkbook.SaveAs Filename:=SavePath7, FileFormat:=xlOpenXMLWorkbook
+    
+Application.ScreenUpdating = True
+    
+    'Activates the macro workbook to be front and center
+    ThisWorkbook.Activate
+        Sheets("Macros").Activate
+    
+End Sub
