@@ -1,0 +1,128 @@
+Sub Data_Modifcation()
+    'Declares wk as template macro file
+    Dim wk As Workbook
+    'Declare shortcuts
+    Dim fd1 As Office.FileDialog
+    Dim strFile As String
+'--Defintions----------------------------------------------------------------------------------------------------------
+    '----------------------------------Folder Paths (C)----------------------------------
+    'designates path destinations for Sharepoint
+        'To Main Path
+        Path = Sheets("Paths").Range("C3").Value
+        'Year (Fld_Y)
+        Ypath = Sheets("Paths").Range("C4").Value
+        'Month (Fld_M)
+        Monpath = Sheets("Paths").Range("C5").Value
+        'T-1Year (Fld_Y)
+        PYpath = Sheets("Paths").Range("C6").Value
+        'T-1Month (Fld_M)
+        PMonth = Sheets("Paths").Range("C7").Value
+        'T-2Month (Fld_M)
+        P2Month = Sheets("Paths").Range("C8").Value
+        'RAW_Data_Documents (Fld_1)
+        Fld_1 = Sheets("Paths").Range("C9").Value
+        'Historical Builds/Product  (Fld_2)
+        Fld_2 = Sheets("Paths").Range("C10").Value
+        ' Templates (Fld_3)
+        Fld_3 = Sheets("Paths").Range("C11").Value
+        '(Fld_20)
+        Fld_20 = Sheets("Paths").Range("C28").Value
+    '----------------------------------Open Files (H)------------------------------------
+    'designates the Post-lock Combined Constituents File
+        'MMM_YYYY__Save_v.7   (oFile0)
+        oFile0 = Sheets("Paths").Range("H5").Value
+    '----------------------------------Data Files (Q)------------------------------------
+    'designates the Last Quarters Latest Delivery File
+        'RAW_PIVOT_DATA_MMM_YYYY.csv   (dFile0)
+        dFile0 = Sheets("Paths").Range("Q5").Value
+        'RAW_PIVOT_DATA_DATA_MMM_YYYY   (dFile1)
+        dFile1 = Sheets("Paths").Range("Q6").Value
+        'RAW_PIVOT_DATA_DATA.csv   (dFile2)
+        dFile2 = Sheets("Paths").Range("Q7").Value
+    '----------------------------------Template Files (N)--------------------------------
+    'designates the Last Quarters Latest Delivery File
+        'Template   (tFile0)
+        tFile0 = Sheets("Paths").Range("N5").Value
+    '----------------------------------Save Files (K)------------------------------------
+    'designates the Save as File Names
+        'MMM_YYYY__FIle Save_v.0   (sFile0)
+        sFile0 = Sheets("Paths").Range("K5").Value
+        'MMM_YYYY__FIle Save_v.1   (sFile1)
+        sFile1 = Sheets("Paths").Range("K6").Value
+        'MMM_YYYY__FIle Save_v.2   (sFile2)
+        sFile2 = Sheets("Paths").Range("K7").Value
+        'MMM_YYYY__FIle Save_v.3   (sFile3)
+        sFile3 = Sheets("Paths").Range("K8").Value
+        'MMM_YYYY__FIle Save_v.4   (sFile4)
+        sFile4 = Sheets("Paths").Range("K9").Value
+        'MMM_YYYY__FIle Save_v.5   (sFile5)
+        sFile5 = Sheets("Paths").Range("K10").Value
+        'MMM_YYYY__FIle Save_v.6   (sFile6)
+        sFile6 = Sheets("Paths").Range("K11").Value
+        'MMM_YYYY__FIle Save_v.7   (sFile7)
+        sFile7 = Sheets("Paths").Range("K12").Value
+    '----------------------------------Sheet Names (E)-----------------------------------
+    'designates the Sheets Names
+        'Template   (Sheet_0)
+        Sheet_0 = Sheets("Paths").Range("E5").Value
+        'Requirements   (Sheet_1)
+        Sheet_1 = Sheets("Paths").Range("E6").Value
+        'REQ_Headers   (Sheet_2)
+        Sheet_2 = Sheets("Paths").Range("E7").Value
+        ' Pivot   (Sheet_3)
+        Sheet_3 = Sheets("Paths").Range("E8").Value
+        'Data Set   (Sheet_4)
+        Sheet_4 = Sheets("Paths").Range("E9").Value
+        'REF Data   (Sheet_5)
+        Sheet_5 = Sheets("Paths").Range("E10").Value
+        'Old REF Data   (Sheet_6)
+        Sheet_6 = Sheets("Paths").Range("E11").Value
+    '----------------------------------Save Paths----------------------------------------
+    'designates Paths
+        'Path to Product ->PYYYY->PrevMonth
+        sPath0 = Path & Fld_2 & PYpath & PMonth & Fld_20
+    '----------------------------------Open Paths----------------------------------------
+    'designates Paths
+        'Path to Product -> Templates->Comments Template   (tFile0)
+        oPath0 = Path & Fld_2 & Fld_3 & tFile0
+        'Path to Raw_Data_Documents->YYYY->MMM->.csv   (dFile0)
+        oPath1 = Path & Fld_1 & PYpath & PMonth & dFile0
+        'Path to Raw_Data_Documents->YYYY->MMM->   (dFile1)
+        oPath2 = Path & Fld_1 & PYpath & PMonth & dFile1
+        'Path to Raw_Data_Documents->YYYY->MMM->.csv   (dFile2)
+        oPath3 = Path & Fld_1 & PYpath & PMonth & dFile2
+        'Path to Raw_Data_Documents->YYYY->MMM->.xlsx   (oFile0)
+        oPath4 = Path & Fld_2 & PYpath & P2Month & oFile0
+        
+    '----------------------------------Save As Files Path--------------------------------
+        'MMM_YYYY__Wbig_build_v.0   (sFile0)
+        SavePath0 = sPath0 & sFile0
+        'MMM_YYYY__Wbig_build_v.1   (sFile1)
+        SavePath1 = sPath0 & sFile1
+        'MMM_YYYY__Wbig_build_v.2   (sFile2)
+        SavePath2 = sPath0 & sFile2
+        'MMM_YYYY__Wbig_build_v.3   (sFile3)
+        SavePath3 = sPath0 & sFile3
+        'MMM_YYYY__Wbig_build_v.4   (sFile4)
+        SavePath4 = sPath0 & sFile4
+        'MMM_YYYY__Wbig_build_v.5   (sFile5)
+        SavePath5 = sPath0 & sFile5
+        'MMM_YYYY__Wbig_build_v.6   (sFile6)
+        SavePath6 = sPath0 & sFile6
+        'MMM_YYYY__Wbig_build_v.7   (sFile7)
+        SavePath7 = sPath0 & sFile7
+    '----------------------------------Keywords------------------------------------------
+        NCOV = "" & Chr(34) & "No Coverage" & Chr(34) & ""
+        ND = "" & Chr(34) & "No Data" & Chr(34) & ""
+        NA = "" & Chr(34) & "#N/A" & Chr(34) & ""
+        NE = "" & Chr(34) & "Not Excluded" & Chr(34) & ""
+        NC = "" & Chr(34) & "Non-Compliant" & Chr(34) & ""
+        COM = "" & Chr(34) & "Compliant" & Chr(34) & ""
+        EX = "" & Chr(34) & "Excluded" & Chr(34) & ""
+        WL = "" & Chr(34) & "Watchlist" & Chr(34) & ""
+        nm = "" & Chr(34) & "No Match" & Chr(34) & ""
+        y = "" & Chr(34) & "Yes" & Chr(34) & ""
+        blk = """"""
+        NPM = "" & Chr(34) & "Not in Previous Month" & Chr(34) & ""
+        'Special naming cell: _No_Data_Mmm
+        Cell1 = Sheets("Paths").Range("E21").Value
